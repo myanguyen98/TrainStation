@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+	<script src="https://www.gstatic.com/firebasejs/4.2.0/firebase.js"></script>
+	<title>Train Station</title>
+</head>
+<body>
+	<div class="container">
+		<div class="jumbotron">
+  		<h1 class="text-center">Train Station</h1>
+  		<h2 class="text-center">Get your caboose over here.</h2>
+		</div>
+	
+
+	<div class="row">
+			
+			<div class="panel panel-default">
+				
+				<div class="panel-heading">Current Train Schedule</div>
+
+				<div class="panel-body">
+					
+					<table class="table table-striped">
+						
+						<thead>
+							
+							<tr>
+								<th>Train Name</th>
+								<th>Destination</th>
+								<th>Frequency (min)</th>
+								<th>Next Arrival</th>
+								<th>Minutes Away</th>
+							</tr>
+
+							<tbody>
+							 <!-- Your user input will be appended here -->
+							</tbody>
+
+						</thead>
+
+					</table>
+
+				</div>
+
+			</div>
+
+		</div>
+
+		<div class="row">
+			
+			<div class="panel panel-default">
+				
+				<div class="panel-heading">Add Train</div>
+
+					<div class="panel-body">
+						
+						<form >
+							
+							<div class="form-group">
+								
+								<label for="name">Train Name</label>
+								<input type="name" class="form-control" id="nameInput" placeholder="Train Name">
+
+							</div>
+
+							<div class="form-group">
+								
+								<label for="destination">Destination</label>
+								<input type="text" class="form-control" id="destinationInput" placeholder="Destination">
+
+							</div>
+
+							<div class="form-group">
+								
+								<label for="tTime">First Train Time (HH:mm)</label>
+								<input type="number" class="form-control" id="timeInput" placeholder="(HH:mm)">
+
+							</div>
+
+							<div class="form-group">
+								
+								<label for="frequency">Frequency (min.)</label>
+								<input type="number" class="form-control" id="frInput" placeholder="How often train appears at station.">
+
+							</div>
+						<input class="btn btn-default" type="submit" value="Submit" id="submit"></input>
+						</form>
+
+					</div>
+
+			</div>
+
+		</div>
+	</div>
+	<style type="text/css">
+		.jumbotron{
+			background-color:#20948b;
+			color:#f4cc70 ;
+		}
+
+		.panel-default>.panel-heading {
+			background-color: #20948b;
+			color: #6ab187;
+		}
+
+		.panel{
+			background-color:#f4cc70 ;
+			color:#de7a22;
+		}
+
+		.panel-heading{
+			font-size: 20px;
+		}
+
+		#submit{
+			background-color:#20948b;
+			color:#6ab187;
+			font-size: 20px; 
+		}
+	</style>
+
+	<script
+ 	src="https://code.jquery.com/jquery-3.2.1.min.js"
+ 	integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
+ 	crossorigin="anonymous"></script>
+	<script>
+		var config = {
+    apiKey: "AIzaSyBKTBHmljCjO9e4k6nLDDbM6VlLgIIvKT8",
+    authDomain: "train-station-b487b.firebaseapp.com",
+    databaseURL: "https://train-station-b487b.firebaseio.com",
+    projectId: "train-station-b487b",
+    storageBucket: "",
+    messagingSenderId: "624795720946"
+  };
+  	firebase.initializeApp(config);
+  	var database=firebase.database();
+
+  	function submit(){
+  		event.preventDefault();
+
+  		var name=$("#nameInput").val().trim();
+  		var dest=$("#destinationInput").val().trim();
+  		var time=$("#timeInput").val().trim();
+  		var freq=$("#frInput").val().trim();
+
+  		var tableData = $(".table")
+			var newRow=$("<tr></tr>");
+			var nameCell=$("<td/>").text(name);
+			var destCell=$("<td/>").text(dest);
+			var freqCell=$("<td/>").text(freq);
+			var nextArrivalCell=$("<td/>");
+			var minAwayCell=$("<td/>");
+			
+			newRow.append(nameCell,destCell,freqCell,nextArrivalCell,minAwayCell);
+			tableData.prepend(newRow); 
+  	
+			var newTrain = database.ref().push({
+  			TrainName:name,
+  			Destination:dest,
+  			FirstTrainTime:time,
+  			Frequency:freq,
+  			dateAdded:firebase.database.ServerValue.TIMESTAMP,
+  		});
+  	};
+
+  	database.ref().on("child_added",function(childSnapshot){
+			
+			var theChild=childSnapshot.val();
+
+			console.log(theChild.TrainName);
+
+			var tableData = $(".table")
+			var newRow=$("<tr></tr>");
+			var nameCell=$("<td/>").text(theChild.TrainName);
+			var destCell=$("<td/>").text(theChild.Destination);
+			var freqCell=$("<td/>").text(theChild.Frequency);
+			var nextArrivalCell=$("<td/>");
+			var minAwayCell=$("<td/>");
+			
+			newRow.append(nameCell,destCell,freqCell,nextArrivalCell,minAwayCell);
+			tableData.prepend(newRow);
+	});
+
+
+  	$("#submit").on("click",submit);
+	</script>
+</body>
+</html>
