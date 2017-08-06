@@ -4,6 +4,8 @@
 	<meta charset="UTF-8">
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 	<script src="https://www.gstatic.com/firebasejs/4.2.0/firebase.js"></script>
+	<script src="https://cdn.jsdelivr.net/momentjs/2.12.0/moment.min.js"></script>
+
 	<title>Train Station</title>
 </head>
 <body>
@@ -75,7 +77,7 @@
 							<div class="form-group">
 								
 								<label for="tTime">First Train Time (HH:mm)</label>
-								<input type="number" class="form-control" id="timeInput" placeholder="(HH:mm)">
+								<input type="text" class="form-control" id="timeInput" placeholder="(HH:mm)">
 
 							</div>
 
@@ -181,9 +183,37 @@
 			
 			newRow.append(nameCell,destCell,freqCell,nextArrivalCell,minAwayCell);
 			tableData.prepend(newRow);
+
+			
+
 	});
 
+  function calcs(){
+  		var tFrequency=45;
+			var firstTime="03:05";
+			var firstTimeConverted=
+	  		moment(firstTime,"hh:mm").subtract(1,"years");
+	  	var currentTime= moment();
+	  		console.log("Current Time:"+moment(currentTime).format("hh:mm"));
+	  	var diffTime=
+	  		moment().diff(moment(firstTimeConverted),"minutes");
+	  			console.log("Difference in Time:"+diffTime);
+	  	var tRemainder= diffTime%tFrequency;
+	  		console.log(tRemainder);
+	  	var tMinutesTillTrain=tFrequency-tRemainder;
+	  		console.log("Minutes till Train:"+tMinutesTillTrain);
+	  	var nextTrain=moment().add(tMinutesTillTrain,"minutes");
+	  		console.log("Arrival Time:"+moment(nextTrain).format("hh:mm"));
 
+
+	  	var momentCalc=database.ref().push({
+	  		MinutesAway:tMinutesTillTrain,
+	  		NextArrival:nextTrain,
+	  	});
+	};
+  	
+
+  	
   	$("#submit").on("click",submit);
 	</script>
 </body>
